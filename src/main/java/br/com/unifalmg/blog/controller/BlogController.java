@@ -1,6 +1,7 @@
 package br.com.unifalmg.blog.controller;
 
 import br.com.unifalmg.blog.entity.User;
+import br.com.unifalmg.blog.exception.UserNotFoundException;
 import br.com.unifalmg.blog.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -54,4 +55,30 @@ public class BlogController {
         return "showuser";
     }
 
-}
+    @GetMapping("/user/{id}/edit")
+    public String editUser(@PathVariable("id") Integer id,
+                           Model model) {
+        try {
+            User user = service.findById(id);
+            if (user == null) {
+                // ID inválido, redireciona para a página newuser
+                return "redirect:/user";
+            }
+            model.addAttribute("user", user);
+            model.addAttribute("id", id);
+            return "edituser";
+        } catch (UserNotFoundException e) {
+            return "redirect:/user";
+        }
+    }
+
+    @PostMapping("/user/{id}/edit")
+    public String editUser(@PathVariable("id") Integer id,
+                           @ModelAttribute("user") User user) {
+        log.info("Entrou no cadastro de usuário");
+        service.add(user);
+
+        return "redirect:/user/" + id;
+    }
+
+    }

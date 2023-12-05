@@ -1,5 +1,6 @@
 package br.com.unifalmg.blog.service;
 
+import br.com.unifalmg.blog.controller.request.UserRequest;
 import br.com.unifalmg.blog.entity.User;
 import br.com.unifalmg.blog.exception.InvalidUserException;
 import br.com.unifalmg.blog.exception.UserNotFoundException;
@@ -18,11 +19,7 @@ public class UserService {
     private final UserRepository repository;
 
     public List<User> getAllUsers() {
-        List<User> users = repository.findAll();
-        if (users == null){
-            throw new IllegalArgumentException("User List cannot be null");
-        }
-        return users;
+        return repository.findAll();
     }
 
     public User findById(Integer id) {
@@ -41,6 +38,24 @@ public class UserService {
             throw new InvalidUserException();
         }
         return repository.save(user);
+    }
+
+    public void deleteUserById(Integer id) {
+        if (Objects.isNull(id)) {
+            throw new IllegalArgumentException("Id null when fetching for an user.");
+        }
+        repository.deleteById(id);
+    }
+
+    public User add (UserRequest userRequest) {
+        User user = User.builder()
+                .name(userRequest.getName())
+                .username(userRequest.getUsername())
+                .email(userRequest.getEmail())
+                .phone(userRequest.getPhone())
+                .website(userRequest.getWebsite())
+                .build();
+        return add(user);
     }
 
 }
